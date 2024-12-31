@@ -1,5 +1,5 @@
 # python game for happy new year 2025
-[ここをクリックしてプレイ]()
+[ここをクリックしてプレイ](https://snakesneaks.github.io/HappyNewYear2025SnakeGame/build/web/)
 
 # プレイ方法
 1. 矢印キーでヘビを操作できます

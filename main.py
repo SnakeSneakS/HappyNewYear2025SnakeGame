@@ -244,6 +244,42 @@ SNAKE_UPDATE = pygame.USEREVENT
 pygame.time.set_timer(SNAKE_UPDATE, 200)
 tweet_button = None
 
+
+# button
+button_size = 50
+left_bottom_x = OFFSET // 2  # 左下の基準X座標
+left_bottom_y = OFFSET + CELL_SIZE * NUMBER_OF_CELLS - 3 * button_size  # 左下の基準Y座標
+up_button = pygame.Rect(left_bottom_x + button_size,
+                        left_bottom_y, button_size, button_size)
+down_button = pygame.Rect(left_bottom_x + button_size,
+                          left_bottom_y + 2 * button_size, button_size, button_size)
+left_button = pygame.Rect(
+    left_bottom_x, left_bottom_y + button_size, button_size, button_size)
+right_button = pygame.Rect(left_bottom_x + 2 * button_size,
+                           left_bottom_y + button_size, button_size, button_size)
+
+
+# ボタン描画の関数
+
+
+def draw_buttons():
+    pygame.draw.rect(screen, (200, 200, 200), up_button)
+    pygame.draw.rect(screen, (200, 200, 200), down_button)
+    pygame.draw.rect(screen, (200, 200, 200), left_button)
+    pygame.draw.rect(screen, (200, 200, 200), right_button)
+
+    # ボタン上の文字
+    up_text = SCORE_FONT.render("UP", True, (0, 0, 0))
+    down_text = SCORE_FONT.render("DOWN", True, (0, 0, 0))
+    left_text = SCORE_FONT.render("LEFT", True, (0, 0, 0))
+    right_text = SCORE_FONT.render("RIGHT", True, (0, 0, 0))
+
+    screen.blit(up_text, (up_button.x + 5, up_button.y + 5))
+    screen.blit(down_text, (down_button.x + 5, down_button.y + 5))
+    screen.blit(left_text, (left_button.x + 5, left_button.y + 5))
+    screen.blit(right_text, (right_button.x + 5, right_button.y + 5))
+
+
 while True:
     for event in pygame.event.get():
         if event.type == SNAKE_UPDATE:
@@ -265,6 +301,7 @@ while True:
         if event.type == pygame.KEYDOWN:
             if game.state == "STOPPED":
                 game.state = "RUNNING"
+
             if event.key == pygame.K_UP:
                 game.snake.direction = Vector2(0, -1)
             if event.key == pygame.K_DOWN:
@@ -275,6 +312,20 @@ while True:
                 game.snake.direction = Vector2(1, 0)
 
         if event.type == pygame.MOUSEBUTTONDOWN:
+            if game.state == "STOPPED":
+                game.state = "RUNNING"
+
+            # タッチ位置で方向ボタンの押下を判定
+            if up_button.collidepoint(event.pos):
+                game.snake.direction = Vector2(0, -1)
+            elif down_button.collidepoint(event.pos):
+                game.snake.direction = Vector2(0, 1)
+            elif left_button.collidepoint(event.pos):
+                game.snake.direction = Vector2(-1, 0)
+            elif right_button.collidepoint(event.pos):
+                game.snake.direction = Vector2(1, 0)
+
+            # tweet button
             if tweet_button is not None and tweet_button.collidepoint(event.pos):
                 webbrowser.open(
                     f"https://twitter.com/intent/tweet?text=%23%E3%81%82%E3%81%91%E3%81%8A%E3%82%81%E3%83%98%E3%83%93%E3%82%B2%E3%83%BC%E3%83%A02025%0ATime:%20{game.time}%0AResult:%20{''.join([s.text for s in game.snake.segments])}%0A%20https%3A%2F%2Fgithub.com%2FSnakeSneakS%2FHappyNewYear2025SnakeGame")
@@ -290,6 +341,9 @@ while True:
     screen.blit(title_surface, (OFFSET - 5, 20))
     screen.blit(score_surface, (OFFSET - 5, OFFSET +
                 CELL_SIZE * NUMBER_OF_CELLS + 10))
+
+    # 仮想ボタンを描画
+    draw_buttons()
 
     if game.check_finished():
         tweet_button = pygame.Rect(
